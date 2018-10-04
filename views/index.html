@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>LOGIN</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+   <script type="text/javascript"></script>
+   <style type="text/css"></style>
+  
+
+<style>
+  body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: white;
+    background-color:grey;
+    }
+    img{
+	width: 100px;
+	height: 100px;
+	vertical-align: 0.5px;
+	float: middle;
+	display: top;
+}
+
+    .col-sm-4{
+    background-color: skyblue;
+   float: initial;
+    width: 40%;
+    height: 80%;
+    border: 50px black;
+    padding: 10%;
+    margin: 30px;
+    border-radius: 10px;
+}
+
+.form-control {
+    display: block;
+    width: 80%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: blue;
+    background-color: #fff;
+    background-image: none;
+    border: 10px  powderblue;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+  </style>
+
+  <script>
+  	$( document ).ready(function(){
+	
+ 	// GET REQUEST
+
+
+	$("#allCustomers").click(function(){
+		var first=document.getElementById("#username");
+		console.log(first);
+
+		var last=document.getElementById("#password");
+		console.log(last);
+		ajaxGet();
+		console.log("get of the value");
+	});
+	
+	
+
+
+	// DO GET
+	function ajaxGet(){
+
+		$.ajax({
+			type : "GET",
+			url : "/submit",
+			success: function(result){
+				$('#getResultDiv ul').empty();
+				var custList = "";
+				$.each(result, function(i, customer){
+					$('#getResultDiv .list-group').append(customer.username + " " + customer.password + "<br>")
+				});
+				console.log("Success: ", result);
+			},
+		
+		});	
+	}
+})
+
+
+     
+    	//=====Register Form=============================================
+   $("#insert").click(function(){
+     var username  = $("#username").val();
+     var password = $("#password").val();
+     var regData ={'username': username,'password':password};
+       $.ajax({
+         type : 'GET',
+         url : '/insert',
+         data : regData,
+         success: function(data){
+         $("#postResultDiv").html(data);
+         }
+       });
+   });
+
+$( document ).ready(function(){
+	
+	// SUBMIT FORM
+    $("#customerForm").submit(function(event) {
+		// Prevent the form from submitting via the browser.
+		
+		event.preventDefault();
+		ajaxPost();
+	});
+    
+     //insert form
+     $("#customerForm").insert(function(event) {
+		// Prevent the form from submitting via the browser.
+		
+		event.preventDefault();
+		ajaxPost();
+	});
+    
+    
+    
+    function ajaxPost(){
+    	
+    	// PREPARE FORM DATA
+    	var formData = {
+    		username : $("#username").val(),
+    		password :  $("#password").val()
+    	}
+    	
+    	// DO POST
+    	$.ajax({
+			type : "get",
+			contentType : "application/json",
+			url : "/submit",
+			data : (formData),
+			dataType : 'json',
+			success : function(customer) {
+				$("#postResultDiv").html("<p>" + 
+					"login Successfully! <br>" +
+					"--->" + JSON.stringify(customer)+ "</p>");
+					console.log("postResultDiv submit"); 
+			},
+			 error : function(customer) {
+			 	$("#postResultDiv").html("<p>"+"login failed! <br>" + "--->" + JSON.stringify(customer)+ "</p>");
+			 	console.log("postResultDiv submit");
+			// 	alert("Error!")
+			// 	console.log("ERROR: ", e);
+			 }
+		});
+    	
+
+    	// Reset FormData after Posting
+    	resetData();
+ 
+    }
+    
+    function resetData(){
+    	$("#username").val("");
+    	$("#password").val("");
+    }
+});
+
+
+  </script>	
+
+</head>
+ 
+<body> 
+<div class="container" >
+
+<div class="col-sm-4" >
+	
+	
+	
+	<div>		
+		<form id="customerForm">
+		  <div class="form-group">
+		  	
+
+			<label for="username">UserName:</label>
+			<input type="text" class="form-control" id="username" placeholder="Enter userName"/>
+		  </div>
+		  <div class="form-group">
+			<label for="lastname">Password:</label>
+			<input type="text" class="form-control" id="password" placeholder="password" required />
+		  </div>
+		  <button type="submit" class="btn btn-default">Submit</button>
+		  <button type="insert" class="btn btn-default">Insert</button>
+		</form>
+	</div>
+	<div id="postResultDiv">
+	</div>
+	<br>
+	
+</div>	
+</div>
+</body>
+</html>
